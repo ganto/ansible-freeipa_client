@@ -1,5 +1,6 @@
 This role installs [SSSD](https://fedorahosted.org/sssd) and [Certmonger](https://fedorahosted.org/certmonger) and configures them to
-be used as clients for a [FreeIPA](http://freeipa.org) server.
+be used as clients for a [FreeIPA](http://freeipa.org) server. It is meant to be used on systems which don't package the official
+[ipa-client-script](http://linux.die.net/man/1/ipa-client-install) setup script (yet), such as Debian (wheezy/jessie).
 
 **This role is still in development. Use it at your own risk.**
 
