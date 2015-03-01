@@ -1,0 +1,16 @@
+---
+
+# Enable to configure host as FreeIPA client
+freeipa_client: False
+
+# FreeIPA server list
+freeipa_servers: []
+
+# FreeIPA domain name
+freeipa_domain: '{{ ansible_domain }}'
+
+# FreeIPA Kerberos realm
+freeipa_realm: '{{ ansible_domain.upper() }}'
+
+# Set user lookup via sssd
+auth_nsswitch: [ 'compat', 'sss' ]

@@ -1,0 +1,25 @@
+# This file is managed by Ansible, all changes will be lost
+
+includedir /var/lib/sss/pubconf/krb5.include.d/
+
+[libdefaults]
+	default_realm = {{ freeipa_realm }}
+ 	dns_lookup_realm = false
+ 	dns_lookup_kdc = true
+ 	rdns = false
+ 	ticket_lifetime = 24h
+ 	forwardable = yes
+ 	default_ccache_name = KEYRING:persistent:%{uid}
+
+[realms]
+	{{ freeipa_realm }} = {
+		kdc = {{ freeipa_servers[0] }}:88
+		master_kdc = {{ freeipa_servers[0] }}:88
+  		admin_server = {{ freeipa_servers[0] }}:749
+  		default_domain = {{ freeipa_domain }}
+                pkinit_anchors = FILE:/etc/ipa/ca.crt
+	}
+
+[domain_realm]
+	.{{ freeipa_domain }} = {{ freeipa_realm }}
+	{{ freeipa_domain }} = {{ freeipa_realm }}

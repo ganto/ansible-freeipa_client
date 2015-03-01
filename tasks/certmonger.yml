@@ -1,0 +1,31 @@
+---
+
+- name: Install certmonger packages
+  apt:
+    name: '{{ item }}'
+    state: 'latest'
+    install_recommends: 'no'
+  with_items: [ 'certmonger', 'libnss3-tools' ]
+
+- name: Create NSS certificate directory
+  file:
+    path: '/etc/ssl/nssdb'
+    owner: 'root'
+    group: 'root'
+    mode: '755'
+    state: 'directory'
+
+- name: Create NSS certificate database
+  command: certutil -N -d /etc/ssl/nssdb --empty-password
+           creates='/etc/ssl/nssdb/cert8.db'
+  notify: [ 'Restart certmonger' ]
+
+- name: Check IPA CA certificate in NSS database
+  shell: certutil -L -n 'IPA CA' -d /etc/ssl/nssdb || true
+  register: freeipa_register_cacrt
+  changed_when: False
+
+- name: Add IPA CA certificate to NSS database
+  command: certutil -A -d /etc/ssl/nssdb -n 'IPA CA' -t CT,C,C -a -i /etc/ipa/ca.crt
+  when: "freeipa_register_cacrt.stderr.startswith('certutil: Could not find cert')"
+  notify: [ 'Restart certmonger' ]
