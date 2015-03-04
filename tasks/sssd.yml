@@ -43,6 +43,21 @@
     mode: '0600'
   notify: [ Restart sssd ]
 
+- name: Adjust SSH to check IPA known hosts
+  lineinfile:
+    dest: /etc/ssh/ssh_config
+    line: '    GlobalKnownHostsFile /var/lib/sss/pubconf/known_hosts'
+
+- name: Enable SSH public-key authentication
+  lineinfile:
+    dest: /etc/ssh/ssh_config
+    line: '    PubkeyAuthentication yes'
+
+- name: Set SSSD known hosts proxy command
+  lineinfile:
+    dest: /etc/ssh/ssh_config
+    line: '    ProxyCommand /usr/bin/sss_ssh_knownhostsproxy -p %p %h'
+
 - name: Configure kerberos client
   template:
     src: 'etc/krb5.conf.j2'
@@ -55,3 +70,22 @@
 - name: Set nsswitch.conf lookup methods
   set_fact:
     auth_nsswitch: "{{ auth_nsswitch }}"
+
+##
+## TODO: add to debops.sshd template
+##
+#- name: Adjust SSHD to check IPA authorized keys
+#  lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    line: '    AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys'
+#
+#- name: Set authorized keys command user
+#  lineinfile:
+#    dest: /etc/ssh/sshd_config
+#    line: '    AuthorizedKeysCommandUser nobody'
+#
+#- name: Enable GSSAPI Authentication for SSH
+#  lineinfile:
+#    dest: /etc/ssh/ssh_config
+#    regexp: '^[ ]*GSSAPIAuthentication yes'
+#    line: '    GSSAPIAuthentication yes'
