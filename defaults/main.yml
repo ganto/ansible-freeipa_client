@@ -22,6 +22,7 @@ sssd_packages:
   - libsasl2-modules-ldap
   - libsasl2-modules-gssapi-mit
   - sudo
+  - cracklib-runtime
 
 sss_sudo_pkg:
   - libsss-sudo
