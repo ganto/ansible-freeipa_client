@@ -1,7 +1,9 @@
 # This file is managed by Ansible, all changes will be lost
 
+{% if ansible_distribution_release != 'wheezy' and ansible_distribution_release != 'precise' %}
 includedir /var/lib/sss/pubconf/krb5.include.d/
 
+{% endif %}
 [libdefaults]
 	default_realm = {{ freeipa_realm }}
  	dns_lookup_realm = false
@@ -9,7 +11,9 @@ includedir /var/lib/sss/pubconf/krb5.include.d/
  	rdns = false
  	ticket_lifetime = 24h
  	forwardable = yes
+{% if ansible_distribution_release != 'wheezy' and ansible_distribution_release != 'precise' %}
  	default_ccache_name = KEYRING:persistent:%{uid}
+{% endif %}
 
 [realms]
 	{{ freeipa_realm }} = {
