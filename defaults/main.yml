@@ -12,5 +12,22 @@ freeipa_domain: '{{ ansible_domain }}'
 # FreeIPA Kerberos realm
 freeipa_realm: '{{ ansible_domain.upper() }}'
 
+# Packages required for SSSD
+sssd_packages:
+  - krb5-user
+  - sssd
+  - sssd-tools
+  - libpam-sss
+  - libnss-sss
+  - libsasl2-modules-ldap
+  - libsasl2-modules-gssapi-mit
+  - sudo
+
+sss_sudo_pkg:
+  - libsss-sudo
+
+sss_sudo_pkg_old:
+  - libsss-sudo0
+
 # Set user lookup via sssd
 auth_nsswitch: [ 'compat', 'sss' ]

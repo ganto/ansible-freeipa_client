@@ -5,7 +5,16 @@
     name: '{{ item }}'
     state: 'latest'
     install_recommends: 'no'
-  with_items: [ 'krb5-user', 'sssd', 'sssd-tools', 'libsasl2-modules-ldap', 'libsasl2-modules-gssapi-mit', 'libpam-sss', 'libnss-sss', 'sudo', 'libsss-sudo',  ]
+  with_items: sssd_packages + [ sss_sudo_pkg ]
+  when: ansible_distribution_release != 'wheezy' and ansible_distribution_release != 'precise'
+
+- name: Install SSSD packages in Wheezy/Precise
+  apt:
+    name: '{{ item }}'
+    state: 'latest'
+    install_recommends: 'no'
+  with_items: sssd_packages + [ sss_sudo_pkg_old ]
+  when: ansible_distribution_release == 'wheezy' or ansible_distribution_release == 'precise'
 
 - name: Divert original /etc/krb5.conf
   command: dpkg-divert --quiet --local --divert /etc/krb5.conf.dpkg-divert --rename /etc/krb5.conf
