@@ -1,5 +1,10 @@
 ---
 
+dependencies:
+
+  - role: debops.auth
+    tags: freeipa_client
+
 galaxy_info:
   author: 'Reto Gantenbein'
   description: 'Configure FreeIPA client'
