@@ -1,0 +1,16 @@
+---
+
+- name: Adjust SSH to check IPA known hosts
+  lineinfile:
+    dest: /etc/ssh/ssh_config
+    line: '    GlobalKnownHostsFile /var/lib/sss/pubconf/known_hosts'
+
+- name: Enable SSH public-key authentication
+  lineinfile:
+    dest: /etc/ssh/ssh_config
+    line: '    PubkeyAuthentication yes'
+
+- name: Set SSSD known hosts proxy command
+  lineinfile:
+    dest: /etc/ssh/ssh_config
+    line: '    ProxyCommand /usr/bin/sss_ssh_knownhostsproxy -p %p %h'

@@ -1,0 +1,11 @@
+---
+
+- name: Setup PAM 'mkhomedir' if requested
+  template:
+    src: 'usr/share/pam-configs/mkhomedir'
+    dest: '/usr/share/pam-configs/mkhomedir'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: [ 'Reconfigure libpam-runtime' ]
+  when: freeipa_pam_mkhomedir

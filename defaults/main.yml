@@ -1,34 +1,57 @@
 ---
+# Default variables
+# =================
 
-# Enable to configure host as FreeIPA client
+# .. contents:: Sections
+#    :local:
+#
+# ----------------------------------------
+#   General FreeIPA client configuration
+# ----------------------------------------
+
+# Configuration options for connecting the host to a FreeIPA server (not yet
+# available via DebOps). After enabling the ``freeipa_client`` various services
+# such as SSSD, certmonger and PAM are correctly setup so that most of the
+# FreeIPA functinality can be used on this host.
+
+
+# .. envvar:: freeipa_client
+#
+# Configure host as FreeIPA client
 freeipa_client: False
 
-# FreeIPA server list
+
+# .. envvar:: freeipa_servers
+#
+# List of hosts which are set as FreeIPA servers
 freeipa_servers: []
 
+
+# .. envvar:: freeipa_domain
+#
 # FreeIPA domain name
 freeipa_domain: '{{ ansible_domain }}'
 
+
+# .. envvar:: freeipa_realm
+#
 # FreeIPA Kerberos realm
 freeipa_realm: '{{ ansible_domain.upper() }}'
 
-# Packages required for SSSD
-sssd_packages:
-  - krb5-user
-  - sssd
-  - sssd-tools
-  - libpam-sss
-  - libnss-sss
-  - libsasl2-modules-ldap
-  - libsasl2-modules-gssapi-mit
-  - sudo
-  - cracklib-runtime
 
-sss_sudo_pkg:
-  - libsss-sudo
+# .. envvar:: freeipa_pki
+#
+# Setup certmonger to use the FreeIPA PKI infrastructure
+freeipa_pki: True
 
-sss_sudo_pkg_old:
-  - libsss-sudo0
 
-# Set user lookup via sssd
+# .. envvar:: freeipa_pam_mkhomedir
+#
+# Enable mkhomedir PAM module
+freeipa_pam_mkhomedir: True
+
+
+# .. envvar:: auth_nsswitch
+#
+# Set user lookup via sssd (requires ``debops-auth`` role)
 auth_nsswitch: [ 'compat', 'sss' ]

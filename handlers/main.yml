@@ -5,3 +5,6 @@
 
 - name: Restart certmonger
   service: name=certmonger state=restarted
+
+- name: Reconfigure libpam-runtime
+  command: /usr/sbin/dpkg-reconfigure --frontend noninteractive libpam-runtime

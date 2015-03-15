@@ -5,20 +5,17 @@
     name: '{{ item }}'
     state: 'latest'
     install_recommends: 'no'
-  with_items: sssd_packages + [ sss_sudo_pkg ]
-  when: ansible_distribution_release != 'wheezy' and ansible_distribution_release != 'precise'
-
-- name: Install SSSD packages in Wheezy/Precise
-  apt:
-    name: '{{ item }}'
-    state: 'latest'
-    install_recommends: 'no'
-  with_items: sssd_packages + [ sss_sudo_pkg_old ]
-  when: ansible_distribution_release == 'wheezy' or ansible_distribution_release == 'precise'
-
-- name: Divert original /etc/krb5.conf
-  command: dpkg-divert --quiet --local --divert /etc/krb5.conf.dpkg-divert --rename /etc/krb5.conf
-           creates=/etc/krb5.conf.dpkg-divert
+  with_items:
+    - 'sssd'
+    - 'sssd-tools'
+    - 'libpam-sss'
+    - 'libnss-sss'
+    - 'libsasl2-modules-ldap'
+    - 'libsasl2-modules-gssapi-mit'
+    - 'sudo'
+    - 'cracklib-runtime'
+    - '{{ "libsss-sudo" if (( ansible_lsb.id == "Debian" and ansible_lsb.major_release | version_compare("8", ">=")) or
+                           ( ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | version_compare("14.04", ">=" ))) else "libsss-sudo0" }}' 
 
 - name: Create IPA configuration directory
   file:
@@ -43,49 +40,10 @@
     mode: '0600'
   notify: [ Restart sssd ]
 
-- name: Adjust SSH to check IPA known hosts
-  lineinfile:
-    dest: /etc/ssh/ssh_config
-    line: '    GlobalKnownHostsFile /var/lib/sss/pubconf/known_hosts'
-
-- name: Enable SSH public-key authentication
-  lineinfile:
-    dest: /etc/ssh/ssh_config
-    line: '    PubkeyAuthentication yes'
-
-- name: Set SSSD known hosts proxy command
-  lineinfile:
-    dest: /etc/ssh/ssh_config
-    line: '    ProxyCommand /usr/bin/sss_ssh_knownhostsproxy -p %p %h'
-
-- name: Configure kerberos client
-  template:
-    src: 'etc/krb5.conf.j2'
-    dest: '/etc/krb5.conf'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify: [ Restart sssd ] 
-
 - name: Set nsswitch.conf lookup methods
   set_fact:
     auth_nsswitch: "{{ auth_nsswitch }}"
 
-##
-## TODO: add to debops.sshd template
-##
-#- name: Adjust SSHD to check IPA authorized keys
-#  lineinfile:
-#    dest: /etc/ssh/sshd_config
-#    line: '    AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys'
-#
-#- name: Set authorized keys command user
-#  lineinfile:
-#    dest: /etc/ssh/sshd_config
-#    line: '    AuthorizedKeysCommandUser nobody'
-#
-#- name: Enable GSSAPI Authentication for SSH
-#  lineinfile:
-#    dest: /etc/ssh/ssh_config
-#    regexp: '^[ ]*GSSAPIAuthentication yes'
-#    line: '    GSSAPIAuthentication yes'
+- include: krb5.yml
+- include: ssh_client.yml
+- include: pam.yml

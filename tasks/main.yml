@@ -1,6 +1,6 @@
 ---
 
 - include: sssd.yml
-  when: freeipa_client is defined and freeipa_client == True
+  when: freeipa_client
 - include: certmonger.yml
-  when: freeipa_client is defined and freeipa_client == True
+  when: freeipa_client and freeipa_pki
