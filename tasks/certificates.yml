@@ -1,0 +1,92 @@
+---
+
+- name: Install certmonger packages
+  apt:
+    name: '{{ item }}'
+    state: 'latest'
+    install_recommends: 'no'
+  with_items: [ 'dbus', 'certmonger', 'libnss3-tools' ]
+
+- name: Create NSS certificate directory
+  file:
+    path: '{{ freeipa_client_nss_path }}'
+    owner: 'root'
+    group: 'root'
+    mode: '755'
+    state: 'directory'
+
+- name: Create NSS certificate database
+  command: certutil -N -d '{{ freeipa_client_nss_path }}' --empty-password
+           creates='{{ freeipa_client_nss_path }}/cert8.db'
+  notify: [ 'Restart certmonger' ]
+
+- name: Check IPA CA certificate in NSS database
+  shell: certutil -L -n 'IPA CA' -d '{{ freeipa_client_nss_path }}' || true
+  register: freeipa_register_cacrt
+  changed_when: False
+
+- name: Add IPA CA certificate to NSS database
+  command: certutil -A -d '{{ freeipa_client_nss_path }}' -n 'IPA CA' -t CT,C,C -a -i /etc/ipa/ca.crt
+  when: "freeipa_register_cacrt.stderr.startswith('certutil: Could not find cert')"
+  notify: [ 'Restart certmonger' ]
+
+- name: Add IPA CA certificate to PEM certificates
+  copy:
+    src: /etc/ipa/ca.crt
+    dest: '{{ freeipa_client_pem_cert_path }}/{{ freeipa_domain.split(".")[0] | title }}_CA_Root.pem'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: freeipa_client_register_pem_ca_trust
+  when: freeipa_client_pem_ca_trust is defined and freeipa_client_pem_ca_trust
+
+- name: Compute IPA CA certificate hash
+  command: openssl x509 -hash -noout -in '{{ freeipa_client_register_pem_ca_trust.dest }}'
+  register: freeipa_client_register_pem_ca_hash
+  when: freeipa_client_register_pem_ca_trust.changed
+
+- name: Create IPA CA certificate hash link
+  shell: ln -s `basename '{{ freeipa_client_register_pem_ca_trust.dest }}'` '{{ freeipa_client_register_pem_ca_hash.stdout }}.0'
+  args:
+    chdir: '{{ freeipa_client_pem_cert_path }}'
+    creates: '{{ freeipa_client_register_pem_ca_hash.stdout }}.0'
+  when: freeipa_client_register_pem_ca_trust.changed
+
+- name: Check installed certmonger version
+  shell: dpkg-query -W -f='${Version}\n' certmonger 2>/dev/null | sed -e 's/^.*://' || true
+  register: freeipa_client_register_certmonger_version
+  changed_when: False
+
+- name: Request SSL host certificate
+  command: ipa-getcert request \
+    '{{ "-r -w" if freeipa_client_register_certmonger_version.stdout | version_compare("0.75", ">=") else "-r" }}' \
+    -k '{{ freeipa_client_pem_key_path }}/{{ ansible_fqdn }}.key' \
+    -f '{{ freeipa_client_pem_cert_path }}/{{ ansible_fqdn }}.pem' \
+    -g '{{ freeipa_client_cert_key_size }}' -K 'host/{{ ansible_fqdn }}' \
+    -N 'CN={{ ansible_fqdn }},O={{ freeipa_realm }}' \
+    -U id-kp-serverAuth
+  args:
+    creates: '{{ freeipa_client_pem_cert_path }}/{{ ansible_fqdn }}.pem'
+
+- name: Set SSL private key permissions
+  file:
+    path: '{{ freeipa_client_pem_key_path }}/{{ ansible_fqdn }}.key'
+    owner: 'root'
+    group: 'ssl-cert'
+    mode: '0640'
+
+# There is still a small issue as the certificate retrieval in wheezy is
+# asynchronous. So even the procedure will be successful, the certificate
+# might not be here yet, so the hash generation will fail.
+# -> Simple work-around: Re-run the role
+
+- name: Compute SSL host certificate hash
+  command: openssl x509 -hash -noout -in '{{ freeipa_client_pem_cert_path }}/{{ ansible_fqdn }}.pem'
+  register: freeipa_client_register_pem_host_hash
+  changed_when: False
+
+- name: Create SSL host certificate hash link
+  shell: ln -s `basename '{{ ansible_fqdn }}.pem'` '{{ freeipa_client_register_pem_host_hash.stdout }}.0'
+  args:
+    chdir: '{{ freeipa_client_pem_cert_path }}'
+    creates: '{{ freeipa_client_register_pem_host_hash.stdout }}.0'

@@ -10,9 +10,7 @@
 # ----------------------------------------
 
 # Configuration options for connecting the host to a FreeIPA server (not yet
-# available via DebOps). After enabling the ``freeipa_client`` various services
-# such as SSSD, certmonger and PAM are correctly setup so that most of the
-# FreeIPA functinality can be used on this host.
+# available via DebOps).
 
 
 # .. envvar:: freeipa_client
@@ -39,12 +37,6 @@ freeipa_domain: '{{ ansible_domain }}'
 freeipa_realm: '{{ ansible_domain.upper() }}'
 
 
-# .. envvar:: freeipa_pki
-#
-# Setup certmonger to use the FreeIPA PKI infrastructure
-freeipa_pki: True
-
-
 # .. envvar:: freeipa_pam_mkhomedir
 #
 # Enable mkhomedir PAM module
@@ -55,3 +47,47 @@ freeipa_pam_mkhomedir: True
 #
 # Set user lookup via sssd (requires ``debops-auth`` role)
 auth_nsswitch: [ 'compat', 'sss' ]
+
+
+# ----------------------
+#   PKI client options
+# ----------------------
+
+# .. envvar:: freeipa_client_pki
+#
+# Setup certmonger to use the FreeIPA PKI infrastructure
+freeipa_client_pki: True
+
+
+# .. envvar:: freeipa_client_pem_ca_trust
+#
+# Add FreeIPA CA to trusted PEM certificates
+freeipa_client_pem_ca_trust: True
+
+
+# .. envvar:: freeipa_client_pem_base_path
+#
+# Directory path for PEM certificate storage
+freeipa_client_pem_cert_path: '/etc/ssl/certs'
+
+
+# .. envvar:: freeipa_client_pem_key_path
+#
+# Directory path for PEM key storage
+freeipa_client_pem_key_path: '/etc/ssl/private'
+
+
+# .. envvar:: freeipa_client_nss_path
+#
+# Directory path for NSS certificate database
+freeipa_client_nss_path: '/etc/ssl/nssdb'
+
+
+# ----------------------------
+#   Certificate options
+# ----------------------------
+
+# .. envvar:: freeipa_client_cert_key_size
+#
+# Default key size
+freeipa_client_cert_key_size: '2048'

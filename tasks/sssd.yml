@@ -17,20 +17,6 @@
     - '{{ "libsss-sudo" if (( ansible_lsb.id == "Debian" and ansible_lsb.major_release | version_compare("8", ">=")) or
                            ( ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | version_compare("14.04", ">=" ))) else "libsss-sudo0" }}' 
 
-- name: Create IPA configuration directory
-  file:
-    path: '/etc/ipa'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
-    state: 'directory'
-
-- name: Download IPA CA certificate
-  get_url:
-    url: 'https://{{ freeipa_servers[0] }}/ipa/config/ca.crt'
-    validate_certs: 'no'
-    dest: '/etc/ipa/ca.crt'
-
 - name: Configure SSSD for IPA server
   template:
     src: 'etc/sssd/sssd.conf.j2'
@@ -45,5 +31,3 @@
     auth_nsswitch: "{{ auth_nsswitch }}"
 
 - include: krb5.yml
-- include: ssh_client.yml
-- include: pam.yml

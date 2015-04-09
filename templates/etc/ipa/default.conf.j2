@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+[global]
+host={{ ansible_fqdn }}
+basedn=dc=inofix-test,dc=ch
+realm={{ freeipa_realm }}
+domain={{ freeipa_domain }}
+xmlrpc_uri=https://{{ freeipa_servers[0] }}/ipa/xml
