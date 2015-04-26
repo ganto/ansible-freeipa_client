@@ -61,20 +61,26 @@ freeipa_client_pki: True
 
 # .. envvar:: freeipa_client_pem_ca_trust
 #
-# Add FreeIPA CA to trusted PEM certificates
+# Add FreeIPA CA to globally trusted PEM certificates
 freeipa_client_pem_ca_trust: True
 
 
-# .. envvar:: freeipa_client_pem_base_path
+# .. envvar:: freeipa_client_x509_base_path
+#
+# Base path for storing x509 certfificates
+freeipa_client_x509_base_path: '/etc/x509'
+
+
+# .. envvar:: freeipa_client_pem_cert_path
 #
 # Directory path for PEM certificate storage
-freeipa_client_pem_cert_path: '/etc/ssl/certs'
+freeipa_client_pem_cert_path: '{{ freeipa_client_x509_base_path }}/certs'
 
 
 # .. envvar:: freeipa_client_pem_key_path
 #
 # Directory path for PEM key storage
-freeipa_client_pem_key_path: '/etc/ssl/private'
+freeipa_client_pem_key_path: '{{ freeipa_client_x509_base_path }}/keys'
 
 
 # .. envvar:: freeipa_client_nss_path
@@ -91,3 +97,9 @@ freeipa_client_nss_path: '/etc/ssl/nssdb'
 #
 # Default key size
 freeipa_client_cert_key_size: '2048'
+
+
+# .. envvar:: freeipa_client_cert_key_group
+#
+# Owner group of the private key
+freeipa_client_cert_key_group: 'ssl-cert'
