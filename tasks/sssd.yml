@@ -19,7 +19,7 @@
 
 - name: Configure SSSD for IPA server
   template:
-    src: 'etc/sssd/sssd.conf.j2'
+    src: '{{ lookup("template_src", "etc/sssd/sssd.conf.j2") }}'
     dest: '/etc/sssd/sssd.conf'
     owner: 'root'
     group: 'root'
