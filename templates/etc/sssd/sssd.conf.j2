@@ -17,8 +17,7 @@ debug_level = 6
 # sudo configuration
 sudo_provider = ldap
 ldap_uri = {% for server in freeipa_servers %}{{ "ldap://%s" | format(server) }}{% endfor %}{{ "" }}
-# TODO: generate search base
-ldap_sudo_search_base = ou=SUDOers,dc=inofix-test,dc=ch
+ldap_sudo_search_base = ou=SUDOers,dc={{ freeipa_domain.split(".") | join(",dc=") }}
 ldap_sasl_mech = GSSAPI
 ldap_sasl_authid = host/{{ ansible_fqdn }}
 ldap_sasl_realm = {{ freeipa_realm }}
