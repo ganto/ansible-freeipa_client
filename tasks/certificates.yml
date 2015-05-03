@@ -70,7 +70,7 @@
 
 - name: Request SSL host certificate
   command: ipa-getcert request \
-    '{{ "-r -w" if freeipa_client_register_certmonger_version.stdout | version_compare("0.75", ">=") else "-r" }}' \
+    -r '{{ "-w" if freeipa_client_register_certmonger_version.stdout | version_compare("0.75", ">=") else "-v" }}' \
     -k '{{ freeipa_client_pem_key_path }}/{{ ansible_fqdn }}.key' \
     -f '{{ freeipa_client_pem_cert_path }}/{{ ansible_fqdn }}.crt' \
     -g '{{ freeipa_client_cert_key_size }}' -K 'host/{{ ansible_fqdn }}' \
