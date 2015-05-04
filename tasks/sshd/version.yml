@@ -1,0 +1,10 @@
+---
+
+# This task won't be used directly by the freeipa_client role. It's supposed
+# to be called from the debops.sshd pre_main.yml hook like:
+#   - include: '{{ lookup("roles_path", "ansible-freeipa_client/tasks/sshd/version.yml") }}'
+
+- name: Check installed OpenSSH server version
+  shell: dpkg-query -W -f='${Version}\n' openssh-server 2>/dev/null | sed -e 's/^.*://' || true
+  register: pre_sshd_register_package_dpkg_version
+  changed_when: False
