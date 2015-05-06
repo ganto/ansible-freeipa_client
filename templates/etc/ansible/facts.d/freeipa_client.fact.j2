@@ -1,0 +1,6 @@
+{
+{% if freeipa_client_pki is defined and freeipa_client_pki %}
+"x509_base_path":"{{ freeipa_client_x509_base_path | default('/etc/x509') }}",
+{% endif %}
+"domain":"{{ freeipa_domain | default(ansible_domain) }}"
+}

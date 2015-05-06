@@ -3,6 +3,24 @@
 - name: Pre hooks
   include: '{{ lookup("task_src", "freeipa_client/pre_main.yml") }}'
 
+- name: Make sure that Ansible local facts directory exists
+  file:
+    path: '/etc/ansible/facts.d'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: Save local facts
+  template:
+    src: '{{ lookup("template_src", "etc/ansible/facts.d/freeipa_client.fact.j2") }}'
+    dest: '/etc/ansible/facts.d/freeipa_client.fact'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: freeipa_client_register_facts
+  notify: [ 'Gather FreeIPA client facts' ]
+
 - name: Create IPA configuration directory
   file:
     path: '/etc/ipa'
