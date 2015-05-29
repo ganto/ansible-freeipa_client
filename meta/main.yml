@@ -5,6 +5,12 @@ dependencies:
   - role: debops.auth
     tags: freeipa_client
 
+  - role: debops.ntp
+    ntp_daemon: 'ntpd'
+    ntp_servers: '{{ freeipa_servers }}'
+    when: freeipa_ntp is defined and freeipa_ntp
+    tags: ntp
+
 galaxy_info:
   author: 'Reto Gantenbein'
   description: 'Configure FreeIPA client'

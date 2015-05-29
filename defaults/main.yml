@@ -103,3 +103,13 @@ freeipa_client_cert_key_size: '2048'
 #
 # Owner group of the private key
 freeipa_client_cert_key_group: 'ssl-cert'
+
+
+# ---------------
+#   NTP options
+# ---------------
+
+# .. envvar:: freeipa_ntp
+#
+# Use FreeIPA servers as NTP source
+freeipa_ntp: True
