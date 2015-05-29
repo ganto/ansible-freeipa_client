@@ -1,0 +1,9 @@
+---
+
+- name: Configure LDAP client
+  template:
+    src: '{{ lookup("template_src", "etc/ldap/ldap.conf.j2") }}'
+    dest: '/etc/ldap/ldap.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'

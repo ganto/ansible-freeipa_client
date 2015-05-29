@@ -31,3 +31,5 @@
     auth_nsswitch: "{{ auth_nsswitch }}"
 
 - include: krb5.yml
+
+- include: ldap.yml
