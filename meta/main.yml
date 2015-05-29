@@ -11,6 +11,10 @@ dependencies:
     when: freeipa_ntp is defined and freeipa_ntp
     tags: ntp
 
+  # required for CA certificates and 'ssl-cert' group
+  - role: debops.pki
+    tags: freeipa_client
+
 galaxy_info:
   author: 'Reto Gantenbein'
   description: 'Configure FreeIPA client'
