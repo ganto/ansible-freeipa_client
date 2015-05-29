@@ -17,5 +17,5 @@
 TLS_CACERT  /etc/ssl/certs/ca-certificates.crt
 
 URI {% for server in freeipa_servers %}{{ "ldaps://%s" | format(server) }}{% endfor %}{{ "" }}
-BASE {{ freeipa_realm.lower.split(".") | join(",dc=") }}
+BASE {{ freeipa_ldap_base }}
 TLS_CACERT /etc/ipa/ca.crt

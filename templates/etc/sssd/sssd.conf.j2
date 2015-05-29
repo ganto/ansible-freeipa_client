@@ -12,12 +12,15 @@ ipa_hostname = {{ ansible_fqdn }}
 chpass_provider = ipa
 ipa_server = {{ freeipa_servers | join(",") }}
 ldap_tls_cacert = /etc/ipa/ca.crt
+{% if freeipa_domain != (freeipa_realm | lower) %}
+ldap_search_base = {{ freeipa_ldap_base }}
+{% endif %}
 debug_level = 6
 
 # sudo configuration
 sudo_provider = ldap
 ldap_uri = {% for server in freeipa_servers %}{{ "ldap://%s" | format(server) }}{% endfor %}{{ "" }}
-ldap_sudo_search_base = ou=SUDOers,dc={{ freeipa_realm.lower.split(".") | join(",dc=") }}
+ldap_sudo_search_base = ou=SUDOers,{{ freeipa_ldap_base }}
 ldap_sasl_mech = GSSAPI
 ldap_sasl_authid = host/{{ ansible_fqdn }}
 ldap_sasl_realm = {{ freeipa_realm }}

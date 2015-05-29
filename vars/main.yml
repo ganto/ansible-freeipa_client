@@ -1,0 +1,4 @@
+---
+
+# LDAP base DN
+freeipa_ldap_base: 'dc={{ (freeipa_realm | lower).split(".") | join(",dc=") }}'

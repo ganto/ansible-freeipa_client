@@ -2,7 +2,7 @@
 
 [global]
 host={{ ansible_fqdn }}
-basedn={{ freeipa_realm.lower.split(".") | join(",dc=") }}
+basedn={{ freeipa_ldap_base }}
 realm={{ freeipa_realm }}
 domain={{ freeipa_domain }}
 xmlrpc_uri=https://{{ freeipa_servers[0] }}/ipa/xml
