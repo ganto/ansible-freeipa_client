@@ -14,8 +14,8 @@
     - 'libsasl2-modules-gssapi-mit'
     - 'sudo'
     - 'cracklib-runtime'
-    - '{{ "libsss-sudo" if (( ansible_lsb.id == "Debian" and ansible_lsb.major_release | version_compare("8", ">=")) or
-                           ( ansible_lsb.id == "Ubuntu" and ansible_lsb.major_release | version_compare("14.04", ">=" ))) else "libsss-sudo0" }}' 
+    - '{{ "libsss-sudo" if (( ansible_distribution == "Debian" and ansible_distribution_version | version_compare("8.0", ">=")) or
+                           ( ansible_distribution == "Ubuntu" and ansible_distribution_version | version_compare("14.04", ">=" ))) else "libsss-sudo0" }}'
 
 - name: Configure SSSD for IPA server
   template:
