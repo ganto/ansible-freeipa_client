@@ -43,12 +43,6 @@ freeipa_realm: '{{ ansible_domain.upper() }}'
 freeipa_pam_mkhomedir: True
 
 
-# .. envvar:: auth_nsswitch
-#
-# Set user lookup via sssd (requires ``debops-auth`` role)
-auth_nsswitch: [ 'compat', 'sss' ]
-
-
 # ----------------------
 #   PKI client options
 # ----------------------
