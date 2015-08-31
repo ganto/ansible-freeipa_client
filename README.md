@@ -11,6 +11,10 @@ be used as clients for a [FreeIPA](http://freeipa.org) server. It is meant to be
 
         freeipa_client: True
         freeipa_servers: [ 'auth01.{{ ansible_domain }}' ]
+        auth_cracklib: False
+        auth_nsswitch: [ 'compat', 'sss' ]
+        sshd_authorized_keys_lookup: True
+        sshd_authorized_keys_lookup_type: [ 'sss' ]
 				    
   In this case `auth01` is the hostname of the FreeIPA server.
 
